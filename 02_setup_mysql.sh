@@ -35,7 +35,7 @@ docker exec genomehubs-mysql mysql -u root --password=CHANGEME -e \
 
 docker run --rm \
   --name genomehubs-ensembl \
-  --volume ~/genomehubs/v1/ensembl/conf:/ensembl/conf:ro \
+  -v ~/genomehubs/v1/ensembl/conf:/ensembl/conf:ro \
   --link genomehubs-mysql \
   genomehubs/easy-mirror:latest \
   /ensembl/scripts/database.sh /ensembl/conf/database.ini

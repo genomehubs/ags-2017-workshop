@@ -36,6 +36,9 @@ git clone https://github.com/genomehubs/template v1
 
 sudo apt install -y lighttpd
 
+sudo perl -i.bak -plne 's/mod_rewrite",/mod_rewrite",\n  "mod_proxy",/' \
+  /etc/lighttpd/lighttpd.conf
+
 echo '
 $HTTP["host"] =~ "ensembl.example.com"{
   proxy.server = ("" => ("" => (

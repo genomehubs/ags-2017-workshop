@@ -3,15 +3,6 @@
 ##  02_setup_mysql.sh
 ##==============================================================================
 
-## WORKSHOP PARTICIPANTS DO THIS STEP BEFORE RUNNING THIS SCRIPT
-## Edit database.ini config file to import two Ensembl mysql databases
-## eg, pick any from ftp://ftp.ensemblgenomes.org/pub/release-32/metazoa/mysql
-## and append to SPECIES_DBS
-## SPECIES_DBS = [ melitaea_cinxia_core_32_85_1 aedes_aegypti_core_32_85_3 ]
-
-# nano ~/genomehubs/v1/ensembl/conf/database.ini
-
-##------------------------------------------------------------------------------
 ## Create a mysql/data directory to allow the databases to be stored
 ## outside of the MySQL container:
 

@@ -38,14 +38,26 @@ $ ./0N_script_name.sh
 
 In scripts 03a 09 and 11, you will be prompted to edit a particular file. After editing the file, type `Ctrl+x` to save it
 
-Let's begin by running the prepare script:
+# GenomeHubs Overview
+
+The full documentation is at genomehubs.org, but we are only going to run some steps (no analyses like repeatmasker/interproscan etc) as we have limited time.
+
+Today we're going to use five docker containers (double lines: MySQL, EasyMirror, EasyImport, SequenceServer, h5a1) to set up three websites:
+* ensembl.example.com
+* blast.example.com
+* download.example.com
+
+![overview](images/GenomeHubs_schematic_overview.png)
+
+## 01_prepare.sh
+
+Make sure you are in the ags-2017-workshop folder and then type:
 ```
 $ ./01_prepare.sh
 ```
 
 As you wait for it to run, let's look at what it does:
 
-## 01_prepare.sh
 
 ```bash
 #!/bin/bash

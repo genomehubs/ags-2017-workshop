@@ -5,20 +5,20 @@
 
 ## Update system
 
-#sudo apt update
-#sudo apt upgrade -y
+sudo apt update
+sudo apt upgrade -y
 
 ## Install docker.io and git
 
-#sudo apt install -y docker.io git
-#sudo usermod -aG docker $USER
+sudo apt install -y docker.io git
+sudo usermod -aG docker $USER
 
-## Pull docker repos to save time
+## Pull docker repos
 
-#docker pull genomehubs/easy-mirror
-#docker pull genomehubs/easy-import
-#docker pull genomehubs/sequenceserver
-#docker pull genomehubs/h5ai
+docker pull genomehubs/easy-mirror
+docker pull genomehubs/easy-import
+docker pull genomehubs/sequenceserver
+docker pull genomehubs/h5ai
 
 ##------------------------------------------------------------------------------
 ## Create a new directory in your home directory

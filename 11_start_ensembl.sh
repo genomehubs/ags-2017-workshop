@@ -7,12 +7,12 @@
 ## Edit setup.ini to ensure that your two extra species are in SPECIES_DBS
 ## eg
 ## SPECIES_DBS = [
-##   mellitaea_cinxia_core_32_85_1
+##   melitaea_cinxia_core_32_85_1
 ##   operophtera_brumata_obru1_core_32_85_1
 ##   aedes_aegypti_core_32_85_3
 ## ]
 
-# nano ~/genomehubs/v1/ensembl/conf/setup.ini
+nano ~/genomehubs/v1/ensembl/conf/setup.ini
 
 ##------------------------------------------------------------------------------
 ## Start the EasyMirror container after removing the existing one, if any

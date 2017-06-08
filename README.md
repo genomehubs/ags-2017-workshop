@@ -40,7 +40,7 @@ In scripts 03a 09 and 11, you will be prompted to edit a particular file. After 
 
 # GenomeHubs Overview
 
-The full documentation is at genomehubs.org, but we are only going to run some steps (no analyses like repeatmasker/interproscan etc) as we have limited time.
+The full documentation is at https://genomehubs.gitbooks.io/genomehubs/content/, but we are only going to run a subset of the quick start guide (no analyses like repeatmasker/interproscan etc) as we have limited time.
 
 Today we're going to use five docker containers (double lines: MySQL, EasyMirror, EasyImport, SequenceServer, h5a1) to set up three websites:
 * ensembl.example.com
@@ -126,4 +126,54 @@ $HTTP["host"] =~ "blast.example.com"{
 ' | sudo tee -a /etc/lighttpd/lighttpd.conf >/dev/null
 
 sudo service lighttpd restart
+```
+
+## 02_setup_mysql.sh
+
+This step will download all the tables  copy of a default ensembl species database (the butterfly *Melitaea cinxia*) and all the other tables needed for Ensembl to run.
+
+![mysql](GenomeHubs_MySQL.png)
+
+```bash
+#!/bin/bash
+##==============================================================================
+##  02_setup_mysql.sh
+##==============================================================================
+
+## Create a mysql/data directory to allow the databases to be stored
+## outside of the MySQL container:
+
+mkdir -p ~/genomehubs/mysql/data
+
+##------------------------------------------------------------------------------
+## Create a MySQL Docker container to host the Ensembl Databases
+## for your GenomeHub and wait 10 seconds for it to start:
+
+docker run -d \
+  --name genomehubs-mysql \
+  -v ~/genomehubs/mysql/data:/var/lib/mysql \
+  -e MYSQL_ROOT_PASSWORD=CHANGEME \
+  -e MYSQL_ROOT_HOST='172.17.0.0/255.255.0.0' \
+  -p 3306:3306 \
+  mysql/mysql-server:5.5
+
+sleep 10
+
+##------------------------------------------------------------------------------
+## Increase MySQL max_allowed_packet to allow import of large scaffolds:
+
+docker exec genomehubs-mysql mysql -u root --password=CHANGEME -e \
+  'set global max_allowed_packet=10000000000;'
+
+##------------------------------------------------------------------------------
+## Run the `database.sh` script in a `genomehubs/easy-mirror` Docker container:
+## This script will set up database users and import databases into your MySQL
+## container based on the information in the `database.ini` configuration file.
+
+docker run --rm \
+  --name genomehubs-ensembl \
+  --volume ~/genomehubs/v1/ensembl/conf:/ensembl/conf:ro \
+  --link genomehubs-mysql \
+  genomehubs/easy-mirror:latest \
+  /ensembl/scripts/database.sh /ensembl/conf/database.ini
 ```

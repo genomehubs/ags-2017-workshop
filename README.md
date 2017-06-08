@@ -1,24 +1,26 @@
 # Workshop Basics
 
-Log into the machine using the IP address and password you were given:
+Log into the machine using the IP address and password you were given (`$` indicates a command prompt that you should copy-paste and press enter)
 
 ```
 # replace IP address:
-ssh ubuntu@34.248.77.11
+$ ssh ubuntu@34.248.77.11
 ```
 
 Get a copy of the workshop scripts:
 
 ```
-cd ~
-git clone https://github.com/genomehubs/ags-2017-workshop.git
-cd ~/ags-2017-workshop
+$ cd ~
+$ git clone https://github.com/genomehubs/ags-2017-workshop.git
+$ cd ~/ags-2017-workshop
 ```
 
-There should be eight `.sh` scripts that you have to run in order:
-
+If you type:
 ```
-ls -1 *sh
+$ ls -1 *sh
+```
+you should see eight `.sh` scripts that you have to run in order:
+```
 01_prepare.sh
 02_setup_mysql.sh
 03a_test_ensembl.sh
@@ -29,17 +31,19 @@ ls -1 *sh
 11_start_ensembl.sh
 ```
 
-To run the first script, type:
+To run each script, you would type
 ```
-./01_prepare.sh
+$ ./0N_script_name.sh
 ```
-to run the second, type:
-```
-./02_setup_mysql.sh
-```
-and so on.
 
 In scripts 03a 09 and 11, you will be prompted to edit a particular file. After editing the file, type `Ctrl+x` to save it
+
+Let's begin by running the prepare script:
+```
+$ ./01_prepare.sh
+```
+
+As you wait for it to run, let's look at what it does:
 
 ## 01_prepare.sh
 

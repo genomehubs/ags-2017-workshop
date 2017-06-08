@@ -250,3 +250,192 @@ docker run -d \
   -p 8081:8080 \
   genomehubs/easy-mirror:latest
 ```
+
+## 03_import.sh
+
+This step is to import a brand new species *Operophtera brumata* from scratch. We'll go through all the steps in detail, but first run the script:
+
+```
+$ ./03_import.sh
+```
+
+![import](images/GenomeHubs_import.png)
+
+```bash
+#!/bin/bash
+##==============================================================================
+##  03_import.sh
+##==============================================================================
+
+## Run the genomehubs/easy-import Docker container to import FASTA + GFF
+
+docker run --rm \
+  -u $UID:$GROUPS \
+  --name easy-import-operophtera_brumata_obru1_core_32_85_1 \
+  --link genomehubs-mysql \
+  -v ~/genomehubs/v1/import/conf:/import/conf \
+  -v ~/genomehubs/v1/import/data:/import/data \
+  -e DATABASE=operophtera_brumata_obru1_core_32_85_1 \
+  -e FLAGS="-s -p -g" \
+  genomehubs/easy-import:latest
+```
+
+## 04_export_files.sh
+
+This step creates the sequence, gff3, embl, json files, and takes the longest to run, so we can take a break and have more questions about the previous step.
+
+But first, run the script:
+
+```
+$ ./04_export_files.sh
+```
+
+![export](images/GenomeHubs_export.png)
+
+```bash
+#!/bin/bash
+##==============================================================================
+##  04_export_files.sh
+##==============================================================================
+
+## Run the genomehubs/easy-import Docker container to export
+## FASTA/GFF/json files and to index the search database
+## Files for download will be written to directories under
+## ~/genomehubs/v1/download/data/
+## Files ready to format as BLAST databases will be written to
+## ~/genomehubs/v1/blast/data/
+
+docker run --rm \
+  -u $UID:$GROUPS \
+  --name easy-import-operophtera_brumata_obru1_core_32_85_1 \
+  --link genomehubs-mysql \
+  -v ~/genomehubs/v1/import/conf:/import/conf \
+  -v ~/genomehubs/v1/import/data:/import/data \
+  -v ~/genomehubs/v1/download/data:/import/download \
+  -v ~/genomehubs/v1/blast/data:/import/blast \
+  -e DATABASE=operophtera_brumata_obru1_core_32_85_1 \
+  -e FLAGS="-e -f -j -i" \
+  genomehubs/easy-import:latest
+```
+
+## 08_start_download.sh
+
+```
+$ ./08_start_download.sh
+```
+
+![download](images/GenomeHubs_downloads.png)
+
+```bash
+#!/bin/bash
+##==============================================================================
+##  08_start_download.sh
+##==============================================================================
+
+docker run -d \
+  --name genomehubs-h5ai \
+  -v ~/genomehubs/v1/download/conf:/conf:ro \
+  -v ~/genomehubs/v1/download/data:/var/www/v1:ro \
+  -p 8082:8080 \
+  genomehubs/h5ai:latest
+```
+
+## 08_start_download.sh
+
+```
+$ ./08_start_download.sh
+```
+
+![download](images/GenomeHubs_downloads.png)
+
+```bash
+#!/bin/bash
+##==============================================================================
+##  08_start_download.sh
+##==============================================================================
+
+docker run -d \
+  --name genomehubs-h5ai \
+  -v ~/genomehubs/v1/download/conf:/conf:ro \
+  -v ~/genomehubs/v1/download/data:/var/www/v1:ro \
+  -p 8082:8080 \
+  genomehubs/h5ai:latest
+```
+
+## 09_start_blast.sh
+
+```
+$ ./09_start_blast.sh
+```
+
+![download](images/GenomeHubs_BLAST.png)
+
+```bash
+#!/bin/bash
+##==============================================================================
+##  09_start_blast.sh
+##==============================================================================
+
+## WORKSHOP PARTICIPANTS DO THIS STEP BEFORE RUNNING THIS SCRIPT
+## Edit links.rb to ensure that links from BLAST results are directed
+## to your Ensembl site:
+
+## keys in taxa should match your database name(s) and
+## values should match the corresponding SPECIES.URL, e.g.,
+## taxa["aedes_aegypti_core_32_85_3"] = "Aedes_aegypti"
+
+## modify the url = "http://ensembl.example.com/#{assembly}" to match
+## your domain name
+
+nano ~/genomehubs/v1/blast/conf/links.rb
+
+docker run -d \
+  --name genomehubs-sequenceserver \
+  -v ~/genomehubs/v1/blast/conf:/conf:ro \
+  -v ~/genomehubs/v1/blast/data:/dbs:ro \
+  -p 8083:4567 \
+  genomehubs/sequenceserver:latest
+```
+
+## 11_start_ensembl.sh
+
+```
+$ ./11_start_ensembl.sh
+```
+
+![download](images/GenomeHubs_Ensembl.png)
+
+```bash
+#!/bin/bash
+##==============================================================================
+##  11_start_ensembl.sh
+##==============================================================================
+
+## WORKSHOP PARTICIPANTS DO THIS STEP BEFORE RUNNING THIS SCRIPT
+## Edit setup.ini to ensure that your two extra species are in SPECIES_DBS
+## eg
+## SPECIES_DBS = [
+##   melitaea_cinxia_core_32_85_1
+##   operophtera_brumata_obru1_core_32_85_1
+##   aedes_aegypti_core_32_85_3
+## ]
+
+nano ~/genomehubs/v1/ensembl/conf/setup.ini
+
+##------------------------------------------------------------------------------
+## Start the EasyMirror container after removing the existing one, if any
+
+docker rm -f genomehubs-ensembl
+
+docker run -d \
+  --name genomehubs-ensembl \
+  -v ~/genomehubs/v1/ensembl/conf:/ensembl/conf:ro \
+  --link genomehubs-mysql \
+  -p 8081:8080 \
+  genomehubs/easy-mirror:latest
+```
+
+
+
+
+

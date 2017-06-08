@@ -391,8 +391,8 @@ nano ~/genomehubs/v1/blast/conf/links.rb
 
 docker run -d \
   --name genomehubs-sequenceserver \
-  -v ~/genomehubs/v1/blast/conf:/conf:ro \
-  -v ~/genomehubs/v1/blast/data:/dbs:ro \
+  -v ~/genomehubs/v1/blast/conf:/conf \
+  -v ~/genomehubs/v1/blast/data:/dbs \
   -p 8083:4567 \
   genomehubs/sequenceserver:latest
 ```
@@ -434,8 +434,3 @@ docker run -d \
   -p 8081:8080 \
   genomehubs/easy-mirror:latest
 ```
-
-
-
-
-

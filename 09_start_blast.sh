@@ -14,7 +14,7 @@
 ## modify the url = "http://ensembl.example.com/#{assembly}" to match
 ## your domain name
 
-# nano ~/genomehubs/v1/blast/conf/links.rb
+nano ~/genomehubs/v1/blast/conf/links.rb
 
 docker run -d \
   --name genomehubs-sequenceserver \

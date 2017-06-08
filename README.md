@@ -1,13 +1,17 @@
 # Workshop Basics
 
-Log into the machine using the IP address and password you were given (`$` indicates a command prompt that you should copy-paste and press enter)
+Go to [IP address spreadsheet](https://docs.google.com/spreadsheets/d/1wsiuloV9Lpt6XPWg1Cgd7cz3V7kIlxZBDH6parfQZcA/edit?usp=sharing)
+
+Put your name against an IP address.
+
+Log into the machine using the IP address and password `genomehubs` (`$` indicates a command prompt that you should copy-paste and press enter) like this:
 
 ```
 # replace IP address:
 $ ssh ubuntu@34.248.77.11
 ```
 
-Get a copy of the workshop scripts:
+Once you are logged into the Amazon VM, get a copy of the workshop scripts:
 
 ```
 $ cd ~
@@ -130,9 +134,16 @@ sudo service lighttpd restart
 
 ## 02_setup_mysql.sh
 
-This step will download all the tables  copy of a default ensembl species database (the butterfly *Melitaea cinxia*) and all the other tables needed for Ensembl to run.
+This step will download all the MySQL tables of a default ensembl species database (the butterfly *Melitaea cinxia*) locally, and all the other tables needed for Ensembl to run.
 
-![mysql](GenomeHubs_MySQL.png)
+Please type/copy-paste the following command:
+```
+$ ./02_setup_mysql.sh
+```
+
+While it's running, here's what it's doing:
+
+![mysql](images/GenomeHubs_MySQL.png)
 
 ```bash
 #!/bin/bash
@@ -172,8 +183,70 @@ docker exec genomehubs-mysql mysql -u root --password=CHANGEME -e \
 
 docker run --rm \
   --name genomehubs-ensembl \
-  --volume ~/genomehubs/v1/ensembl/conf:/ensembl/conf:ro \
+  -v ~/genomehubs/v1/ensembl/conf:/ensembl/conf:ro \
   --link genomehubs-mysql \
   genomehubs/easy-mirror:latest \
   /ensembl/scripts/database.sh /ensembl/conf/database.ini
+```
+
+## 03a_test_ensembl.sh
+
+This step will test that the software is installed, and that the default data has been imported.
+
+In this step, you have to edit the setup.ini file that pops up and add a NEW species database that you want to mirror. Please type/copy-paste the following command:
+
+```
+$ ./03a_test_ensembl.sh
+```
+
+First, comment out these three lines:
+```
+#  GENOMEHUBS_PLUGIN_URL = https://github.com/genomehubs/gh-ensembl-plugin
+#  GENOMEHUBS_PLUGIN_BRANCH = develop
+#  GENOMEHUBS_PLUGIN_PACKAGE = EG::GenomeHubs
+```
+Now visit this URL: ftp://ftp.ensemblgenomes.org/pub/release-32/metazoa/mysql
+
+Choose any species database you would like in a new line under [SPECIES_DBS]. This will "Mirror" the content of the existing Ensembl database, but will not download the files. Eg, you can pick:
+
+```
+[DATA_SOURCE]
+  SPECIES_DBS = [
+    melitaea_cinxia_core_32_85_1
+    bombus_impatiens_core_32_85_2
+]
+```
+Note: do not put the trailing slash `/`
+
+Once you have made the changes, press `Ctrl + x` which will save the file, and continue running the rest of the script.
+
+Here's what it's doing:
+```bash
+#!/bin/bash
+##==============================================================================
+##  03a_test_ensembl.sh
+##==============================================================================
+
+## WORKSHOP PARTICIPANTS DO THIS STEP BEFORE RUNNING THIS SCRIPT
+## Edit setup.ini config file, add a new line to SPECIES_DBS
+## choose ensembl database name from
+## ftp://ftp.ensemblgenomes.org/pub/release-32/metazoa/mysql
+## eg:
+## SPECIES_DBS = [
+##   melitaea_cinxia_core_32_85_1
+##   aedes_aegypti_core_32_85_3
+## ]
+## and comment out the 3 lines beginning GENOMEHUBS_PLUGIN_...
+
+nano ~/genomehubs/v1/ensembl/conf/setup.ini
+
+##------------------------------------------------------------------------------
+## Run the `genomehubs/easy-mirror` Docker container to launch the site
+
+docker run -d \
+  --name genomehubs-ensembl \
+  --volume ~/genomehubs/v1/ensembl/conf:/ensembl/conf:ro \
+  --link genomehubs-mysql \
+  -p 8081:8080 \
+  genomehubs/easy-mirror:latest
 ```
